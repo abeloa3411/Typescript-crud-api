@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { InsertOneResult } from "mongodb";
+import { ZodError } from "zod";
 import { Goal, Goals, GoalWithId } from "./goals.model";
 
 export async function getAll(
@@ -26,6 +27,9 @@ export async function createOne(
     const insertResult = await Goals.insertOne(validateResult);
     res.json(insertResult);
   } catch (error) {
+    if (error instanceof ZodError) {
+      res.status(422);
+    }
     next(error);
   }
 }
